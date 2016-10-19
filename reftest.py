@@ -56,6 +56,9 @@ class bcolors:
 
 # print bcolors.WARNING + "Takhle se pouzivaji!" + bcolors.ENDC
 
+
+# blok parsovani argumentu
+# https://docs.python.org/2/library/argparse.html
 parser = argparse.ArgumentParser(description="""Check if your PA1
                                              homework does what it should
                                              do!""")
@@ -98,6 +101,10 @@ args = parser.parse_args()
 archive_cesta = relabscesta(args.archive.name)
 
 # blok WATCHDOG
+# http://pythonhosted.org/watchdog/
+# http://stackoverflow.com/questions/11883336/detect-file-creation-with-watchdog
+# http://stackoverflow.com/questions/18599339/python-watchdog-monitoring-file-for-changes
+# http://stackoverflow.com/questions/32313989/check-specific-file-has-been-modified-using-python-watchdog
 if (args.watchdog == True):
     '''
     # to tu bylo z dokumentace

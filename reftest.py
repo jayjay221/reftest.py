@@ -11,6 +11,20 @@ import logging
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
+
+jmeno_slozky_archiv = 'extracted_archive'
+
+
+
+
+
+
+
+
+
+
+
+
 # funkce overujici existenci souboru v argumentu
 def is_valid_file(parser, arg):
     if not os.path.exists(arg):
@@ -26,7 +40,19 @@ class MyHandler(FileSystemEventHandler):
         if event.src_path.endswith('/'+self.jmenosouboru):
             # print event.src_path+', '+event.event_type
             print self.jmenosouboru+' byl zmenen!'
+# funkce vraci working directory
+def pwd():
+    return os.path.dirname(os.path.abspath(__file__))
 
+
+def relabscesta(nazev):
+    return os.path.abspath(os.path.expanduser(nazev))
+'''
+class FullPaths(argparse.Action):
+    """Expand user- and relative-paths"""
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, os.path.abspath(os.path.expanduser(values)))
+'''
 # barvickyyyyyy
 class bcolors:
     HEADER = '\033[95m'
@@ -66,17 +92,20 @@ parser.add_argument("-e", '--executable', dest="executable", required=False,
                     help="executable file (default \"a.out\")", metavar="FILE.OUT",
                     type=lambda x: is_valid_file(parser, x),
                     default="a.out")
-
+"""
 # argument prijimajici cestu k archivu s referencnimi daty
 parser.add_argument("-a", '--archive', dest="archive", required=False,
-                    help=".tar with ref. I/O (default \"sample.tar.gz\")",
+                    help=".tgz with ref. I/O (default \"sample.tgz\")",
                     metavar="FILE.TGZ",
                     type=lambda x: is_valid_file(parser, x),
-                    default="sample.tar.gz")
-"""
+                    default="sample.tgz")
+
+
 
 
 args = parser.parse_args()
+
+archive_cesta = relabscesta(args.archive.name)
 #print(args.executable.name)
 if (args.watchdog == True):
     logging.basicConfig(level=logging.INFO,
@@ -94,18 +123,16 @@ if (args.watchdog == True):
         observer.stop()
     observer.join()
 #print args.accumulate(args.integers)
-'''
-os.makedirs('test')
-os.chdir('test')
 
-tar = tarfile.open("../sample.tgz")
+#print args.archive
+
+os.makedirs(jmeno_slozky_archiv)
+os.chdir(jmeno_slozky_archiv)
+
+tar = tarfile.open(archive_cesta)
 tar.extractall()
 tar.close()
-
 os.chdir('..')
-'''
-#shutil.rmtree('test')
 
 
-
-# print os.path.dirname(os.path.abspath(__file__))
+shutil.rmtree(jmeno_slozky_archiv)

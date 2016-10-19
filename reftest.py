@@ -1,27 +1,17 @@
-import tarfile
-import filecmp
-import os
-import subprocess
-import argparse
-import shutil
-
-import sys
-import time
-import logging
+import tarfile # prace s archivy
+import filecmp # porovnavani souboru
+import os # volani operacnimu systemu
+import subprocess # volani podprocesu
+import argparse # parsovani argumentu
+import shutil # shell utilities (konkretne mazani celeho file tree)
+#import sys
+#import time
+#import logging
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-
+# predpripravene promenne
 jmeno_slozky_archiv = 'extracted_archive'
-
-
-
-
-
-
-
-
-
 
 
 
@@ -32,7 +22,7 @@ def is_valid_file(parser, arg):
     else:
         return open(arg, 'r')
 
-# handler kterej resi, jestli byl soubor zmenen
+# handler ktery resi, jestli byl soubor zmenen
 class MyHandler(FileSystemEventHandler):
     def __init__(self, jmenosouboru):
         self.jmenosouboru = jmenosouboru
@@ -44,7 +34,7 @@ class MyHandler(FileSystemEventHandler):
 def pwd():
     return os.path.dirname(os.path.abspath(__file__))
 
-
+# funkce vraci expandovane cesty
 def relabscesta(nazev):
     return os.path.abspath(os.path.expanduser(nazev))
 '''
@@ -81,7 +71,7 @@ parser.add_argument('--sum', dest='accumulate', action='store_const',
 # argument pro povoleni vystupu
 parser.add_argument('-v', '--verbose', help='Print output',
                     action='store_true')
-
+# argument pro povoleni watchdog (sledovaciho) modu
 parser.add_argument('-w', '--watchdog', help='Enables Watchdog mode',
                     action='store_true')
 
@@ -102,16 +92,22 @@ parser.add_argument("-a", '--archive', dest="archive", required=False,
 
 
 
-
+# parsuje argumenty
 args = parser.parse_args()
-
+# expandovani relativni/absolutni cesty
 archive_cesta = relabscesta(args.archive.name)
-#print(args.executable.name)
+
+# blok WATCHDOG
 if (args.watchdog == True):
+    '''
+    # to tu bylo z dokumentace
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
-    path = '.' #sys.argv[1] if len(sys.argv) > 1 else '.'
+    '''
+    # adresar pro sledovani
+    path = '.'
+    # volim vlastni handler, ktery si vsima resi pouze jeden soubor
     event_handler = MyHandler('a.out')
     observer = Observer()
     observer.schedule(event_handler, path, recursive=False)
@@ -122,17 +118,26 @@ if (args.watchdog == True):
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
-#print args.accumulate(args.integers)
 
-#print args.archive
-
+# vlezeme do slozky pro extrakci
 os.makedirs(jmeno_slozky_archiv)
 os.chdir(jmeno_slozky_archiv)
 
+# extrakce
 tar = tarfile.open(archive_cesta)
 tar.extractall()
 tar.close()
+
+# o slozku vys
 os.chdir('..')
 
+'''
+TODO
 
+postupne porovnani vsech vystupu s referencnimi
+problematicke vstupy budou podrobne vypsany do terminalu (barevne)
+
+'''
+
+# uklidime
 shutil.rmtree(jmeno_slozky_archiv)

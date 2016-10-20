@@ -30,6 +30,7 @@ class MyHandler(FileSystemEventHandler):
         if event.src_path.endswith('/'+self.jmenosouboru):
             # print event.src_path+', '+event.event_type
             print self.jmenosouboru+' byl zmenen!'
+
 # funkce vraci working directory
 def pwd():
     return os.path.dirname(os.path.abspath(__file__))
@@ -43,6 +44,7 @@ class FullPaths(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, os.path.abspath(os.path.expanduser(values)))
 '''
+
 # barvickyyyyyy
 class bcolors:
     HEADER = '\033[95m'
@@ -55,7 +57,6 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 # print bcolors.WARNING + "Takhle se pouzivaji!" + bcolors.ENDC
-
 
 # blok parsovani argumentu
 # https://docs.python.org/2/library/argparse.html
@@ -78,7 +79,7 @@ parser.add_argument('-v', '--verbose', help='Print output',
 parser.add_argument('-w', '--watchdog', help='Enables Watchdog mode',
                     action='store_true')
 
-# ARGUMENTY KTERE BUDOU POUZITY ALE KVULI DEBUGU JSOU VYPLE
+# argumenty, ktere budou pouzity, ale jsou vyple kvuli debugu
 """
 # argument prijimajici cestu k zkompilovanemu programu
 parser.add_argument("-e", '--executable', dest="executable", required=False,
@@ -97,6 +98,7 @@ parser.add_argument("-a", '--archive', dest="archive", required=False,
 
 # parsuje argumenty
 args = parser.parse_args()
+
 # expandovani relativni/absolutni cesty
 archive_cesta = relabscesta(args.archive.name)
 
@@ -114,7 +116,7 @@ if (args.watchdog == True):
     '''
     # adresar pro sledovani
     path = '.'
-    # volim vlastni handler, ktery si vsima resi pouze jeden soubor
+    # volim vlastni handler, ktery si vsima pouze jednoho souboru
     event_handler = MyHandler('a.out')
     observer = Observer()
     observer.schedule(event_handler, path, recursive=False)
